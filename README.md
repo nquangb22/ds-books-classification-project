@@ -3,7 +3,7 @@
 Group project for the Data Science course (University of Turku).
 We scrape book data from [books.toscrape.com](http://books.toscrape.com/), engineer features, and train a binary classifier to predict whether a book is **Fiction** or **Nonfiction**.
 
-**Deadline:** October 26 (final report as PDF on Moodle, 4-6 pages, max 2 images)
+**Deadline:** November 2 (final report as PDF on Moodle, 4-6 pages, max 2 images)
 
 ## Team and roles
 
