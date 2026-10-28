@@ -1,5 +1,5 @@
 # Cleaning log (Part B)
-## Raw data
+## 1. Raw data
 - Source: data/raw/books_raw.csv (scraped in 25 October 2026)
 - Total 175 books: 110 Nonfiction, 65 Fiction (~63/37, imbalanced)
 - 13 columns, no missing values, types already correct
@@ -19,8 +19,15 @@ Problem 2: repeated text
 - Avg length: 1598 -> 1231 characters (-23%)
 
 Odd cases:
-- 4 books had no "...more": 3 normal short descriptions (untouched)
-- Kindle Paperwhite User's Guide: description = title (placeholder)
-- TODO: decide (empty string vs keep + flag)
-
-
+- 4 books had no “...more”: 3 normal short descriptions (untouched) + Kindle 
+- 4 books had “...more” but no repeated preview (171 vs 167): only “...more” was stripped
+- Kindle Paperwhite User’s Guide: description = title (placeholder), set to empty, row kept
+## 3. Language 
+- Included: 173 en, 1 fr (Soumission, kept), 1 none (Kindle)
+## 4. Columns
+- Dropped columns: price_incl_tax, num_reviews, availability
+- Why: price_incl_tax is identical to price, while num_reviews is always 0. Availability is just store property
+- Kept price/rating: class means nearly equal, random according to the site 
+## 5. Output
+- Included books_clean.csv, 175 rows × 10 columns 
+- Empty description = no description; fill with '' before vectorizing.
