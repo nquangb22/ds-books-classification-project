@@ -41,7 +41,7 @@ Everyone codes against these formats, so we are never blocked waiting on each ot
 
 | Column | Type | Description |
 |---|---|---|
-| `book_id` | int | Stable ID extracted from the product URL (for example submission_998 gives ID 998). Used to join data across project stages. |
+| `book_id` | int | Stable ID extracted from the product URL (for example soumission_998 gives ID 998). Used to join data across project stages. |
 | `title` | str | Book title |
 | `category` | str | `Fiction` or `Nonfiction` (target label taken from the category page) |
 | `product_url` | str | URL of the book's product page |
