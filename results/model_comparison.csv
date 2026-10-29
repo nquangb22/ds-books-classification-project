@@ -1,0 +1,4 @@
+Model,Accuracy
+MultinomialNB + Word Counts,0.8571428571428571
+Logistic Regression + Word Counts,0.8
+Logistic Regression + TF-IDF,0.6571428571428571
