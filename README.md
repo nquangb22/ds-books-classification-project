@@ -3,7 +3,7 @@
 Group project for the Data Science course (University of Turku).
 We scrape book data from [books.toscrape.com](http://books.toscrape.com/), engineer features, and train a binary classifier to predict whether a book is **Fiction** or **Nonfiction**.
 
-**Deadline:** October 26 (final report as PDF on Moodle, 4-6 pages, max 2 images)
+**Deadline:** November 2 (final report as PDF on Moodle, 4-6 pages, max 2 images)
 
 ## Team and roles
 
@@ -41,17 +41,30 @@ Everyone codes against these formats, so we are never blocked waiting on each ot
 
 | Column | Type | Description |
 |---|---|---|
-| `book_id` | int | Unique ID assigned by the scraper |
+| `book_id` | int | Stable ID extracted from the product URL (for example soumission_998 gives ID 998). Used to join data across project stages. |
 | `title` | str | Book title |
-| `category` | str | `Fiction` or `Nonfiction` (the target label, taken from the category page it was scraped from) |
+| `category` | str | `Fiction` or `Nonfiction` (target label taken from the category page) |
 | `product_url` | str | URL of the book's product page |
 | `image_url` | str | URL of the cover image |
-| `image_path` | str | Relative path to the downloaded image, e.g. `data/raw/images/12.jpg` |
+| `image_path` | str | Relative path to the downloaded image, e.g. `data/raw/images/abc123.jpg`. Empty if the image download failed. |
 | `description` | str | Product description text (may be empty) |
-| `price` | float | Price (currency symbol removed) |
-| `rating` | int | Star rating, 1-5 |
+| `price` | float | Book price excluding tax, with the currency symbol removed |
+| `rating` | int | Star rating from 1 to 5 |
+| `upc` | str | Unique product code from the book page |
+| `price_incl_tax` | float | Book price including tax |
+| `availability` | int | Number of copies available |
+| `num_reviews` | int | Number of reviews |
 
 > Extra scraped columns are allowed, but A must list them here.
+### Scraping notes
+
+The scraper collects books from the Fiction and Nonfiction categories on books.toscrape.com. It follows pagination and saves the book information in `data/raw/books_raw.csv`, with cover images in `data/raw/images/`.
+
+The raw data is not deduplicated during scraping. Duplicate checks are printed in the final summary, and any duplicates are handled during the cleaning stage.
+
+If an image fails to download, the book information is still saved with an empty `image_path`. Failed book pages are retried once.
+
+The scraper was tested with 175 books: 65 Fiction and 110 Nonfiction. The final run had 0 duplicate UPCs, 0 duplicate book IDs, 0 missing descriptions, 0 missing images, and 0 failed book pages.
 
 ### Stage B -> C: `data/clean/books_clean.csv`
 
