@@ -1,137 +1,64 @@
-# Books Classification: Fiction vs Nonfiction
+# Fiction vs Nonfiction Book Classification
 
-Group project for the Data Science course (University of Turku).
-We scrape book data from [books.toscrape.com](http://books.toscrape.com/), engineer features, and train a binary classifier to predict whether a book is **Fiction** or **Nonfiction**.
+Course project for the Data Science course, University of Turku.
 
-**Deadline:** November 2 (final report as PDF on Moodle, 4-6 pages, max 2 images)
+**Authors:** Khanh Hung Doan, Nhat Quang Bui, Doan Nhan Ta, Trung Minh Vu Nguyen
 
-## Team and roles
+This repository contains the code, data and results for the project report. The task is binary classification of books into **Fiction** and **Nonfiction**, using data scraped from [books.toscrape.com](http://books.toscrape.com/). The project covers web scraping, data cleaning and exploratory analysis, feature engineering, model training and model evaluation. The methods and results are described in the report.
 
-| Stage | Owner                  | Main output | Report section |
-|---|------------------------|---|---|
-| A. Scraping | `Khanh Hung Doan`      | `data/raw/books_raw.csv`, `data/raw/images/` | Data Scraping |
-| B. Cleaning + EDA | `Nhat Quang Bui`       | `data/clean/books_clean.csv` | Data Cleaning and Analysis |
-| C. Feature engineering | `Doan Nhan Ta`         | `data/features/` | Feature Engineering |
-| D. Modeling + evaluation | `Trung Minh Vu Nguyen` | `results/` | Model Training, Model Evaluation |
+## Contents and how they relate to the report
 
-Introduction, Conclusion and Discussion, and References are written together. One person acts as report editor (`<name>`).
-
-## Repo structure
-
-```
-data/
-  raw/          <- A's output (scraped data, untouched afterwards)
-    images/
-  clean/        <- B's output
-  features/     <- C's output
-notebooks/      <- one notebook per person per stage
-src/            <- reusable scripts (scraper, cleaning helpers, ...)
-results/        <- D's metrics, plots, tables
-report/         <- report drafts and figures
-requirements.txt
-README.md
-```
-
-## Data contract
-
-Everyone codes against these formats, so we are never blocked waiting on each other.
-**`book_id` is the join key across all stages.** Do not rename it or reorder rows without keeping it.
-
-### Stage A -> B: `data/raw/books_raw.csv`
-
-| Column | Type | Description |
+| Report section | Code | Outputs |
 |---|---|---|
-| `book_id` | int | Stable ID extracted from the product URL (for example soumission_998 gives ID 998). Used to join data across project stages. |
-| `title` | str | Book title |
-| `category` | str | `Fiction` or `Nonfiction` (target label taken from the category page) |
-| `product_url` | str | URL of the book's product page |
-| `image_url` | str | URL of the cover image |
-| `image_path` | str | Relative path to the downloaded image, e.g. `data/raw/images/abc123.jpg`. Empty if the image download failed. |
-| `description` | str | Product description text (may be empty) |
-| `price` | float | Book price excluding tax, with the currency symbol removed |
-| `rating` | int | Star rating from 1 to 5 |
-| `upc` | str | Unique product code from the book page |
-| `price_incl_tax` | float | Book price including tax |
-| `availability` | int | Number of copies available |
-| `num_reviews` | int | Number of reviews |
+| Data Scraping | `src/scrape.py` | `data/raw/books_raw.csv`, `data/raw/images/` |
+| Data Cleaning and Analysis | `notebooks/cleaning_eda.ipynb` | `data/clean/books_clean.csv`, `data/clean/cleaning_log.md`, `report/desc_length_by_category.png` |
+| Feature Engineering | `notebooks/c_features.ipynb` | `data/features/*.csv`, `data/features/feature_notes.md` |
+| Model Training and Evaluation | `notebooks/d_modeling.ipynb` | `data/features/split.csv`, `results/` |
 
-> Extra scraped columns are allowed, but A must list them here.
-### Scraping notes
+Each stage reads only the output files of the previous stage. Books are identified across all stages by `book_id`, a stable ID taken from the product URL.
 
-The scraper collects books from the Fiction and Nonfiction categories on books.toscrape.com. It follows pagination and saves the book information in `data/raw/books_raw.csv`, with cover images in `data/raw/images/`.
+## Data
 
-The raw data is not deduplicated during scraping. Duplicate checks are printed in the final summary, and any duplicates are handled during the cleaning stage.
+- **Source:** all books in the Fiction and Nonfiction categories of books.toscrape.com, including pagination.
+- **Size:** 175 books, 110 Nonfiction (62.9%) and 65 Fiction (37.1%).
+- **Scraped fields:** title, category (target label, taken from the category page), description, cover image, price, star rating, UPC, availability and number of reviews.
 
-If an image fails to download, the book information is still saved with an empty `image_path`. Failed book pages are retried once.
+## Reproducing the results
 
-The scraper was tested with 175 books: 65 Fiction and 110 Nonfiction. The final run had 0 duplicate UPCs, 0 duplicate book IDs, 0 missing descriptions, 0 missing images, and 0 failed book pages.
-
-### Stage B -> C: `data/clean/books_clean.csv`
-
-Same columns as the raw file, but cleaned:
-
-- No duplicate books, no corrupted or unopenable images, no rows with a missing label
-- Text columns stripped of stray whitespace and odd characters
-- Numeric columns have the right types
-- Every `image_path` points to a valid file
-
-B also writes `data/clean/cleaning_log.md`: what was removed or changed, how many rows, and why. This feeds directly into the report.
-
-### Stage C -> D: `data/features/`
-
-- `features_<name>.csv` (or `.npy` plus an ID file): one row per `book_id`, one column per feature
-- `feature_notes.md`: how each feature set was built and why
-
-### Train/test split
-
-D defines the split once and saves it as `data/features/split.csv` with columns `book_id, split` (`train` / `test`). Everyone uses the same split. Fit things like TF-IDF vocabularies on the training set only.
-
-## Setup
+Requirements: Python 3 and the packages in `requirements.txt`.
 
 ```bash
-git clone https://github.com/<owner>/<repo>.git
-cd <repo>
-python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
+python3 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
+jupyter notebook
 ```
 
-`requirements.txt` should include at least: `requests`, `beautifulsoup4`, `pandas`, `numpy`, `scikit-learn`, `pillow`, `matplotlib`, `jupyter`.
+Run the notebooks in this order, each with **Kernel → Restart Kernel and Run All Cells**:
 
-## How to run
+1. `notebooks/cleaning_eda.ipynb`
+2. `notebooks/c_features.ipynb`
+3. `notebooks/d_modeling.ipynb`
 
-1. **Scrape:** `python src/scrape.py` (writes `data/raw/`)
-2. **Clean + EDA:** run `notebooks/b_cleaning_eda.ipynb` (writes `data/clean/`)
-3. **Features:** run `notebooks/c_features.ipynb` (writes `data/features/`)
-4. **Model + evaluate:** run `notebooks/d_modeling.ipynb` (writes `results/`)
+The scraped data and images are included in the repository, so scraping is not needed to reproduce the results. To scrape again, run `python src/scrape.py` from the project root. Re-running the notebooks reproduces the committed outputs and results.
 
-> Update file names above if yours differ.
+## Repository structure
 
-## Git workflow
-
-- Never commit directly to `main`. Work on your own branch, e.g. `part-b-cleaning`.
-- Commit small and often with clear messages.
-- When a stage is done, open a **Pull Request** and let one teammate glance at it before merging.
-- Run `git pull origin main` before you start working each day.
-- Stay in your own files and folders to avoid merge conflicts. One notebook per person per stage.
-- Do not commit large files or credentials.
-
-## Handoff checklist
-
-When you finish a stage, post in the group chat:
-
-1. What you pushed and where
-2. Row counts and anything unusual (class ratio, dropped rows, weird data)
-3. Any change to the data contract above (and update this README)
-
-## Data source and ethics
-
-Data comes from [books.toscrape.com](http://books.toscrape.com/), a sandbox site built for scraping practice. Keep a small delay between requests.
-
-## AI use
-
-Per the course brief: generative AI may be used for debugging insight and for advice on formatting and spelling. We do not submit generated code or generated text. All code and report text are written by us.
+```
+src/scrape.py                 scraper
+notebooks/                    cleaning/EDA, feature engineering, modeling
+data/raw/                     scraped data and 175 cover images
+data/clean/                   cleaned dataset and cleaning log
+data/features/                feature matrices, train/test split and notes
+results/                      model comparison tables and confusion matrix
+report/                       figures used in the report
+requirements.txt
+```
 
 ## References
 
-To be filled in as we go (data source, scikit-learn, any model papers).
+- Books to Scrape: http://books.toscrape.com/
+- Pedregosa et al. (2011). Scikit-learn: Machine Learning in Python. *Journal of Machine Learning Research*, 12, 2825-2830.
+- Beautiful Soup: https://www.crummy.com/software/BeautifulSoup/
+- pandas: https://pandas.pydata.org/
+- langdetect: https://pypi.org/project/langdetect/
