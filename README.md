@@ -1,6 +1,6 @@
 # Fiction vs Nonfiction Book Classification
 
-Course project for the Data Science course, University of Turku.
+Course project for the Data Science.
 
 **Authors:** Khanh Hung Doan, Nhat Quang Bui, Doan Nhan Ta, Trung Minh Vu Nguyen
 
